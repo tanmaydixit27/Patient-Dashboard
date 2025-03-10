@@ -1,0 +1,23 @@
+steps:
+  # Install dependencies
+  - name: "gcr.io/cloud-builders/npm"
+    args: ["install"]
+
+  # Run tests
+  - name: "gcr.io/cloud-builders/npm"
+    args: ["test"]
+
+  # Build the React app
+  - name: "gcr.io/cloud-builders/npm"
+    args: ["run", "build"]
+
+  # Build and push the Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$patient-dashboard-453205/patient-dashboard", "."]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$patient-dashboard-453205/patient-dashboard"]
+
+  # Deploy the container to Cloud Run
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["run", "deploy", "patient-dashboard", "--image", "gcr.io/$PROJECT_ID/patient-dashboard", "--platform", "managed"]
